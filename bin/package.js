@@ -329,8 +329,9 @@ function buildDarwin (cb) {
       // Create .zip file (used by the auto-updater)
       console.log('Mac: Creating zip...')
 
+      const destArch = darwin.arch
       const inPath = path.join(buildPath[0], config.APP_NAME + '.app')
-      const outPath = path.join(DIST_PATH, BUILD_NAME + '-darwin.zip')
+      const outPath = path.join(DIST_PATH, destArch === 'x64' ? `${BUILD_NAME}-darwin.zip` : `${BUILD_NAME}-darwin-${destArch}.zip`)
       zip.zipSync(inPath, outPath)
 
       console.log('Mac: Created zip.')
@@ -341,7 +342,8 @@ function buildDarwin (cb) {
 
       const appDmg = require('appdmg')
 
-      const targetPath = path.join(DIST_PATH, BUILD_NAME + '.dmg')
+      const destArch = darwin.arch
+      const targetPath = path.join(DIST_PATH, destArch === 'x64' ? `${BUILD_NAME}.dmg` : `${BUILD_NAME}-${destArch}.dmg`)
       rimraf.sync(targetPath)
 
       // Create a .dmg (Mac disk image) file, for easy user installation.

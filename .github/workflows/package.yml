@@ -1,15 +1,16 @@
 name: package
-on: 
+on:
+  push:
   workflow_dispatch:
 jobs:
   package_linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: '16'
-    - uses: actions/cache@v3
+        node-version: '18'
+    - uses: actions/cache@v4
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -17,7 +18,7 @@ jobs:
           ${{ runner.os }}-node-
     - run: npm install
     - run: npm run package -- linux
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: linux
         path: |
@@ -26,33 +27,35 @@ jobs:
           dist/*.zip
   package_macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: '16'
-    - uses: actions/cache@v3
+        node-version: '18'
+    - uses: actions/cache@v4
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
     - run: npm install
-    - run: npm run package -- darwin
-    - uses: actions/upload-artifact@v3
+    - run: npm run package -- darwin --arch=${{ matrix.arch }}
+    - uses: actions/upload-artifact@v4
       with:
-        name: macos
+        name: macos-${{ matrix.arch }}
         path: |
           dist/*.dmg
-          dist/*.zip
   package_windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: '16'
-    - uses: actions/cache@v3
+        node-version: '18'
+    - uses: actions/cache@v4
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -60,7 +63,7 @@ jobs:
           ${{ runner.os }}-node-
     - run: npm install
     - run: npm run package -- win32
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: windows
         path: |
